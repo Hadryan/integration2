@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.clock.step3"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    
+    <permission
+        android:name="com.clock.step3.PAYMENT_INFO_BROADCAST_PERMISSION"
+        android:label="Read NOOK payment status"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.clock.step3.PAYMENT_INFO_BROADCAST_PERMISSION"/>
+    
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="Clock"
+        android:theme="@style/AppTheme" >
+
+        <service android:name="com.fortumo.android.FortumoService"/>
+        <service android:name="com.fortumo.android.StatusUpdateService"/> 
+      
+        <activity
+           android:name="com.fortumo.android.FortumoActivity"
+             android:theme="@android:style/Theme.Translucent.NoTitleBar"
+             android:configChanges="orientation|keyboardHidden|screenSize"/>    
+
+     
+        <!-- when Pay for Upgrade or Pay for Points,  after submit payment requests -->
+        <!-- server sends "com.clock.step3.PAYMENT_BROADCAST_PERMISSION" broadcast message to tell payment status, should be protected by "signature" permission -->		
+		<!-- com.clock.step3.PaymentStatusReceiver handle all these message  --> 
+		<receiver
+           android:name=".PaymentStatusReceiver"
+           android:permission="com.clock.step3.PAYMENT_INFO_BROADCAST_PERMISSION">
+           <intent-filter>
+              <action android:name="com.fortumo.android.PAYMENT_STATUS_CHANGED"/>
+           </intent-filter>
+       </receiver>
+       		
+	   <activity
+        	android:name=".Pay4Upgrade"
+        	android:label="Clock - Pay for upgrade" >
+        	<intent-filter>
+            	<action android:name="com.clock.step3.Pay4Upgrade" />
+            	<category android:name="android.intent.category.DEFAULT" />
+        	</intent-filter>
+       </activity>
+			
+	   <activity
+        	android:name=".Pay4Points"
+        	android:label="Clock - Pay for points" >
+        	<intent-filter>
+            	<action android:name="com.clock.step3.Pay4Points" />
+            	<category android:name="android.intent.category.DEFAULT" />
+        	</intent-filter>
+    	</activity>
+    	
+	    <activity
+            android:name="com.clock.step3.ClockMainActivity"
+            android:label="Clock - NOOK billing" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+		
+    </application>
+
+</manifest>

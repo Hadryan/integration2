@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.clock.step2"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+ 
+    <!-- Permissions -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
+	<uses-permission android:name="android.permission.RECEIVE_SMS" />
+	<uses-permission android:name="android.permission.SEND_SMS" /> 
+
+    <uses-permission android:name="com.clock.step2.PAYMENT_BROADCAST_PERMISSION" />		
+	<permission
+    android:name="com.clock.step2.PAYMENT_BROADCAST_PERMISSION"
+    android:label="Read Fortumo payment status"
+    android:protectionLevel="signature" />
+		
+	<!-- If your app doesn't need to make phone calls, you can add this, so the app could be installed on tablets. -->
+	<uses-feature android:name="android.hardware.telephony" android:required="false"></uses-feature>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="Clock"
+        android:theme="@style/AppTheme" >
+
+        <activity android:name="com.fortumo.android.FortumoActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>                              
+        <activity
+            android:name="com.clock.step2.ClockMainActivity"
+            android:label="Clock - Fortumo billing" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+	    <service android:name="com.fortumo.android.FortumoService"></service>
+        <service android:name="com.fortumo.android.StatusUpdateService"></service>
+        
+        <receiver android:name="com.fortumo.android.BillingSMSReceiver">
+    		<intent-filter>
+        		<action android:name="android.provider.Telephony.SMS_RECEIVED"></action>
+    		</intent-filter>
+		</receiver>
+     
+        <!-- when Pay for Upgrade or Pay for Points,  after submit payment requests -->
+        <!-- server sends "com.clock.step2.PAYMENT_BROADCAST_PERMISSION" broadcast message to tell payment status, should be protected by "signature" permission -->		
+		<!-- com.clock.step2..PaymentStatusReceiver handle all these message  --> 
+		<receiver android:name=".PaymentStatusReceiver" android:permission="com.clock.step2.PAYMENT_BROADCAST_PERMISSION">
+    		<intent-filter>
+        		<action android:name="com.fortumo.android.PAYMENT_STATUS_CHANGED"></action>
+    		</intent-filter>
+		</receiver>  
+		
+		<activity
+        	android:name=".Pay4Upgrade"
+        	android:label="Clock - Pay for upgrade" >
+        	<intent-filter>
+            	<action android:name="com.clock.step2.Pay4Upgrade" />
+            	<category android:name="android.intent.category.DEFAULT" />
+        	</intent-filter>
+    	</activity>
+			
+		<activity
+        	android:name=".Pay4Points"
+        	android:label="Clock - Pay for points" >
+        	<intent-filter>
+            	<action android:name="com.clock.step2.Pay4Points" />
+            	<category android:name="android.intent.category.DEFAULT" />
+        	</intent-filter>
+    	</activity>
+		
+    </application>
+
+</manifest>
